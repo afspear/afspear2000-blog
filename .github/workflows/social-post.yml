@@ -1,0 +1,56 @@
+name: Post new articles to social media
+
+on:
+  push:
+    branches:
+      - v4
+    paths:
+      - 'content/**/*.md'
+
+jobs:
+  post-to-social:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Get new content file
+        id: newfile
+        run: |
+          FILE=$(git diff --name-only --diff-filter=A HEAD~1 HEAD -- 'content/**/*.md' | grep -v 'index.md' | head -1)
+          if [ -z "$FILE" ]; then
+            echo "skip=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          TITLE=$(grep -m1 '^# ' "$FILE" | sed 's/^# //')
+          URL_PATH=$(echo "$FILE" | sed 's|^content/||; s|\.md$||')
+
+          echo "title=$TITLE" >> $GITHUB_OUTPUT
+          echo "url=https://afspear2000.com/$URL_PATH" >> $GITHUB_OUTPUT
+          echo "skip=false" >> $GITHUB_OUTPUT
+
+      - name: Post to Bluesky
+        if: steps.newfile.outputs.skip == 'false'
+        uses: myConsciousness/bluesky-post@v5
+        with:
+          text: |
+            New blog post: ${{ steps.newfile.outputs.title }}
+
+            ${{ steps.newfile.outputs.url }}
+          identifier: ${{ secrets.BLUESKY_IDENTIFIER }}
+          password: ${{ secrets.BLUESKY_PASSWORD }}
+
+      - name: Post to Twitter
+        if: steps.newfile.outputs.skip == 'false'
+        uses: noweh/post-tweet-v2-action@v1
+        with:
+          message: |
+            New blog post: ${{ steps.newfile.outputs.title }}
+
+            ${{ steps.newfile.outputs.url }}
+          consumer-key: ${{ secrets.TWITTER_API_KEY }}
+          consumer-secret: ${{ secrets.TWITTER_API_SECRET }}
+          access-token: ${{ secrets.TWITTER_ACCESS_TOKEN }}
+          access-token-secret: ${{ secrets.TWITTER_ACCESS_SECRET }}
