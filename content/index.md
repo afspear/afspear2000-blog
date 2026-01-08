@@ -22,12 +22,6 @@ Like everyone I'm riding the AI wave, and am honestly somewhere between deeply c
 - **Cloud-native development** — GCP, Spring Boot, containers. The infrastructure side of the puzzle.
 - **Teams** — The best architecture doesn't matter if people can't build on it together.
 
-## The Path
-
-Infinity Insurance → Emergency Callworks → Altec → RxBenefits → Motion Industries → Spacelabs Healthcare
-
-I started in research at UAB—GPU-accelerated RAID clusters and fMRI brain imaging analysis. The jump from neuroscience data pipelines to enterprise systems was more natural than you'd think.
-
 **B.S. Computer Science**, University of Alabama at Birmingham
 
 ## Elsewhere
